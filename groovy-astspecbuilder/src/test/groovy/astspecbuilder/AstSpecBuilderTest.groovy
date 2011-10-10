@@ -1314,7 +1314,7 @@ methodCall {
         assertSpec(expected, result)
     }
     @Test void testDoWhileStatement() {
-        // AstBuilder does not support DoWhileStatement.
+        // The DSL does not support DoWhileStatement.
     }
 
     @Test void testStaticMethodCallExpression() {
@@ -1422,7 +1422,7 @@ constructor ACC_PUBLIC, {
         def expected = '''\
 importNode java.lang.String.class, 'string'
 importNode java.lang.Integer.class
-// AstBuilder does not support new ImportNode(String packageName).
+// The DSL does not support new ImportNode(String packageName).
 '''
         assertSpec(expected, result)
     }

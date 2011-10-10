@@ -263,8 +263,8 @@ class AstSpecBuilder {
         addLine(node)
     }
     
-    private def astBuilderDoesNotSupport(String s) {
-        addLine("// AstBuilder does not support ${s}.")    
+    private def addDoesNotSupport(String s) {
+        addLine("// The DSL does not support ${s}.")    
     }
     
     private static class Strings {
@@ -335,7 +335,7 @@ class AstSpecBuilder {
         addNode(name: 'continueStatement', child: Label.create(node.label))
     }
     private def addNode(DoWhileStatement node) {
-        astBuilderDoesNotSupport("DoWhileStatement")
+        addDoesNotSupport("DoWhileStatement")
     }
     private def addNode(EmptyStatement node) {
         addNode(name: 'empty')
@@ -427,7 +427,7 @@ class AstSpecBuilder {
             child: [node.booleanExpression, node.falseExpression])
     }
     private def addNode(EmptyExpression node) {
-        astBuilderDoesNotSupport("EmptyExpression")
+        addDoesNotSupport("EmptyExpression")
     }
     private def addNode(FieldExpression node) {
         addNode(name: 'field', child: node.field)
@@ -506,10 +506,10 @@ class AstSpecBuilder {
     }
       // annotated nodes
     private def addNode(EnumConstantClassNode node) {
-        astBuilderDoesNotSupport('EnumConstantClassNode')
+        addDoesNotSupport('EnumConstantClassNode')
     }
     private def addNode(InterfaceHelperClassNode node) {
-        astBuilderDoesNotSupport('InterfaceHelperClassNode')
+        addDoesNotSupport('InterfaceHelperClassNode')
     }
     private static class Interfaces {
         ClassNode[] value
@@ -578,7 +578,7 @@ class AstSpecBuilder {
     }
     private def addNode(ImportNode node) {
         if (node.packageName) {
-            astBuilderDoesNotSupport("new ImportNode(String packageName)")
+            addDoesNotSupport("new ImportNode(String packageName)")
             return
         }
         addNode(name: 'importNode',
@@ -609,7 +609,7 @@ class AstSpecBuilder {
         addNode(name: 'exceptions', child: node.value)        
     }
     private def addNode(PackageNode node) {
-        astBuilderDoesNotSupport("PackageNode")
+        addDoesNotSupport("PackageNode")
     }
     private static class Parameters {
         Parameter[] value
@@ -738,7 +738,7 @@ class AstSpecBuilder {
             attr: ClassName.create(node.type), child: children)
     }
     private def addNode(ModuleNode node) {
-        astBuilderDoesNotSupport('ModuleNode')
+        addDoesNotSupport('ModuleNode')
     }
     private def addNode(Token node) {
         addNode(name: 'token', attr: Str.create(node.text))    

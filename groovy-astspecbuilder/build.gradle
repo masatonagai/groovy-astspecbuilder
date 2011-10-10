@@ -1,7 +1,7 @@
 apply plugin: 'groovy'
 
 version = "0.1.0"
-archivesBaseName = 'astspecbuilder'
+archivesBaseName = 'groovy-astspecbuilder'
 
 repositories {
     mavenCentral()
