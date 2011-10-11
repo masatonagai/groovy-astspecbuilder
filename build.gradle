@@ -1,0 +1,13 @@
+apply plugin: 'groovy'
+
+version = "0.1.0"
+archivesBaseName = 'groovy-astspecbuilder'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    groovy 'org.codehaus.groovy:groovy:1.7.10'
+    testCompile 'junit:junit:4.8.2'
+}
