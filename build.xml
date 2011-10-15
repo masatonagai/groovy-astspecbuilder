@@ -1,0 +1,155 @@
+<project name="AstSpecBuilder" default="binary-all" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+	<property name="id" value="astspecbuilder" />
+	<property name="version" value="0.1.0" />
+	<property name="vendor" value="Nagai Masato" />
+	
+	<!-- directories -->
+	<property name="src.dir" value="src" />
+	<property name="src.main.dir" value="src/main" />
+	<property name="src.test.dir" value="src/test" />
+	<property name="build.dir" value="build" />
+	<property name="dist.dir" value="dist" />
+	<property name="lib.dir" value="lib" />
+ 
+	<!-- the latest version of Groovy -->
+	<property name="groovy.latest.version.major" value="1.8" />
+	<property name="groovy.latest.version.minor" value="3" />
+	
+	<!-- the default version of Groovy -->
+	<property name="groovy.version.major" value="${groovy.latest.version.major}" />
+	<property name="groovy.version.minor" value="${groovy.latest.version.minor}" />
+	
+  <path id="maven-ant-tasks.classpath" 
+  	    path="${lib.dir}/maven-ant-tasks-2.1.3.jar" />
+  <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+           uri="antlib:org.apache.maven.artifact.ant"
+           classpathref="maven-ant-tasks.classpath" />
+	
+	<target name="clean" description="Clean up">
+	  <delete dir="${dist.dir}" />
+	  <delete dir="${build.dir}" />
+	</target>
+	
+	<target name="dist" description="Create all the archives">
+		<antcall target="binary-all" />
+		<antcall target="source" />
+		<antcall target="javadoc" />
+	</target>
+	
+	<target name="source" description="Create the source archive">
+    <zip destfile="${dist.dir}/${id}-${version}-sources.jar"
+         basedir="." includes="src/**" />
+	</target>
+	
+	<target name="javadoc" description="Create the javadoc archive">
+		<artifact:dependencies pathId="groovydoc.classpath">
+			<dependency groupId="org.codehaus.groovy" artifactId="groovy" 
+				          version="${groovy.version.major}.${groovy.version.minor}" />
+		</artifact:dependencies>
+    <taskdef name="groovydoc" classname="org.codehaus.groovy.ant.Groovydoc"
+		         classpathref="groovydoc.classpath" />
+		<groovydoc destdir="${build.dir}/doc" sourcepath="${src.main.dir}"
+            packagenames="**.*" use="true" private="false">
+      <link packages="java.,org.xml.,javax.,org.xml." href="http://download.oracle.com/javase/6/docs/api" />
+      <link packages="groovy.,org.codehaus.groovy."  href="http://groovy.codehaus.org/api" />
+      <link packages="org.apache.tools.ant." href="http://evgeny-goldin.org/javadoc/ant/api" />
+      <link packages="org.junit.,junit.framework." href="http://kentbeck.github.com/junit/javadoc/latest" />
+      <link packages="org.codehaus.gmaven." href="http://evgeny-goldin.org/javadoc/gmaven" />
+    </groovydoc>
+    <zip destfile="${dist.dir}/${id}-${version}-javadoc.jar"
+        basedir="${build.dir}" includes="doc/**" update="true" />
+	</target>
+	
+	<target name="binary-all" description="Create the binary archives for all the supported versions of Groovy">
+		<antcall target="binary">
+			<param name="groovy.version.major" value="1.7" />
+			<param name="groovy.version.minor" value="10" />
+		</antcall>
+		<antcall target="binary">
+			<param name="groovy.version.major" value="${groovy.latest.version.major}" />
+			<param name="groovy.version.minor" value="${groovy.latest.version.minor}" />
+		</antcall>
+	</target>
+		
+	<target name="binary" depends="test" 
+		      description="Create the binary archive">
+		<jar destfile="${dist.dir}/${id}-${version}-groovy-${groovy.version.major}.jar">
+			<fileset dir="${classes.main.dir}" />
+			<manifest>
+				<attribute name="Built-By" value="${vendor}" />
+	      <attribute name="Implementation-Vendor" value="${vendor}"/>
+	      <attribute name="Implementation-Title" value="${ant.project.name}"/>
+	      <attribute name="Implementation-Version" value="${version}-groovy-${groovy.version.major}"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="compile" description="Compile the main code">
+		<property name="groovy.version" 
+			        value="${groovy.version.major}.${groovy.version.minor}" />
+		<echo message="with groovy-${groovy.version}" />
+		
+		<property name="classes.main.dir" 
+			        value="${build.dir}/${groovy.version.major}/main/classes" />
+		<mkdir dir="${classes.main.dir}" />
+		
+		<artifact:dependencies pathId="compile.classpath">
+			<dependency groupId="org.codehaus.groovy" artifactId="groovy" 
+				          version="${groovy.version}" />
+			<dependency groupId="commons-cli" artifactId="commons-cli" version="1.2" />
+		</artifact:dependencies>
+			
+		<taskdef name="groovyc"
+		         classname="org.codehaus.groovy.ant.Groovyc"
+		         classpathref="compile.classpath"/>
+		<groovyc srcdir="${src.main.dir}/groovy" destdir="${classes.main.dir}" 
+			       classpathref="compile.classpath">
+			<javac source="1.4" target="1.4" debug="on" />
+			<classpath>
+				<pathelement path="${classes.main.dir}" />
+			</classpath>
+		</groovyc>
+	</target>
+	
+	<target name="compile-test" depends="compile"
+		      description="Compile the test code">
+		<property name="groovy.version" 
+			        value="${groovy.version.major}.${groovy.version.minor}" />
+		<echo message="with groovy-${groovy.version}" />
+		
+		<artifact:dependencies pathId="compile.classpath">
+			<dependency groupId="org.codehaus.groovy" artifactId="groovy" 
+				          version="${groovy.version}" />
+			<dependency groupId="junit" artifactId="junit" version="4.8.2" />
+			<dependency groupId="commons-cli" artifactId="commons-cli" version="1.2" />
+		</artifact:dependencies>
+		
+		<property name="classes.test.dir" 
+			        value="${build.dir}/${groovy.version.major}/test/classes" />
+		<mkdir dir="${classes.test.dir}" />
+		<groovyc srcdir="${src.test.dir}/groovy" destdir="${classes.test.dir}" 
+			       classpathref="compile.classpath">
+			<javac source="1.4" target="1.4" debug="on" />
+			<classpath>
+				<pathelement path="${classes.main.dir}" />
+				<pathelement path="${classes.test.dir}" />
+			</classpath>
+		</groovyc>
+	</target>
+	
+	<target name="test" description="Compile and run the test code"
+		      depends="compile-test">
+		<junit>
+			<classpath>
+				<path refid="compile.classpath" />
+        <pathelement path="${classes.main.dir}" />
+        <pathelement path="${classes.test.dir}"/>
+			</classpath> 
+			<formatter type="brief" usefile="false" />
+		  <batchtest>
+		    <fileset dir="${classes.test.dir}" includes="**/*Test*.class" />
+		  </batchtest>
+		</junit>
+	</target>
+	
+</project>
