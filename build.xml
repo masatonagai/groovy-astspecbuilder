@@ -1,6 +1,6 @@
 <project name="AstSpecBuilder" default="binary-all" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 	<property name="id" value="astspecbuilder" />
-	<property name="version" value="0.1.0" />
+	<property name="version" value="0.2.0-SNAPSHOT" />
 	<property name="vendor" value="Nagai Masato" />
 	
 	<!-- directories -->
