@@ -1,6 +1,6 @@
 package astspecbuilder
 
-import static AstSpecAssert.*
+import static astspecbuilder.AstSpecAssert.*
 import static org.objectweb.asm.Opcodes.*
 import groovy.lang.GroovyObject
 
@@ -35,6 +35,7 @@ import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.ConstructorCallExpression
 import org.codehaus.groovy.ast.expr.DeclarationExpression
 import org.codehaus.groovy.ast.expr.ElvisOperatorExpression
+import org.codehaus.groovy.ast.expr.EmptyExpression
 import org.codehaus.groovy.ast.expr.FieldExpression
 import org.codehaus.groovy.ast.expr.GStringExpression
 import org.codehaus.groovy.ast.expr.ListExpression
@@ -854,6 +855,22 @@ constructorCall java.lang.Integer.class, {
     }
 }
 '''
+        assertSpec(expected, result)
+    }
+    @Test void testDeclaration() {
+        // def foo    
+        def result = build(new DeclarationExpression(
+            new VariableExpression("foo"),
+            new Token(Types.EQUALS, "=", -1, -1),
+            new EmptyExpression() 
+        ))
+        def expected = """\
+declaration {
+    variable 'foo'
+    token '='
+    expression.add(new ${EmptyExpression.class.name}())
+}
+"""
         assertSpec(expected, result)
     }
     @Test void testDeclarationAndListExpression() {

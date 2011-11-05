@@ -117,6 +117,9 @@ class AstSpecBuilder {
         depth--
         addLine('}')
     }
+    private def addExpression(String exp) {
+        addLine("expression.add(${exp})")    
+    }
     private static class Str {
         Object value        
         /**
@@ -427,7 +430,7 @@ class AstSpecBuilder {
             child: [node.booleanExpression, node.falseExpression])
     }
     private def addNode(EmptyExpression node) {
-        addDoesNotSupport("EmptyExpression")
+        addExpression("new ${EmptyExpression.class.name}()")
     }
     private def addNode(FieldExpression node) {
         addNode(name: 'field', child: node.field)
