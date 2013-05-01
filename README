@@ -1,0 +1,66 @@
+OVERVIEW
+--------
+
+Groovy AstSpecBuilder provides ways to generate Groovy's AST Spec DSL,
+which is the parameter of AstBuilder.buildFromSpec method. See Building
+AST Guide about the DSL at
+
+    http://groovy.codehaus.org/Building+AST+Guide
+
+EXAMPLE
+-------
+
+Building DSL from code
+
+    import astspecbuilder.*
+
+    def spec = new AstSpecBuilder().build('''\
+    println 'hello, world.'
+    ''')
+    println spec
+
+    /* stdout
+    block {
+        returnStatement {
+            methodCall {
+                variable 'this'
+                constant 'println'
+                argumentList {
+                    constant 'hello, world.'
+                }
+            }
+        }
+    }
+    */
+
+Building DSL from AST
+
+    import org.codehaus.groovy.ast.expr.*
+    import astspecbuilder.*
+
+    def spec = new AstSpecBuilder().build(
+        new MethodCallExpression(
+            new VariableExpression('this'),
+            new ConstantExpression('println'),
+            new ArgumentListExpression(
+                new VariableExpression('hello, world'),
+            )
+        )
+    )
+    println spec
+
+    /* stdout
+    methodCall {
+        variable 'this'
+        constant 'println'
+        argumentList {
+            variable 'hello, world.'
+        }
+    }
+    */
+
+LICENSE
+-------
+
+Groovy AstSpecBuilder is licensed under the term of the Apache License, Version 2.0.
+See the file LICENSE for the full license.
